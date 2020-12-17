@@ -1,0 +1,99 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:11
+    ports:
+      - "${DB_PORT}:5432"
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+  # Airflow
+
+  airflow_db:
+    image: postgres:11
+    environment:
+      POSTGRES_DB: airflow_db
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+
+  airflow_webserver:
+    image: apache/airflow
+    hostname: webserver
+    restart: always
+    depends_on:
+      - airflow_db
+    env_file:
+      - .airflow.env
+    volumes:
+      - ./scripts:/opt/airflow/scripts
+      - ./remy_rs/dags:/opt/airflow/dags
+      - ./airflow-logs:/opt/airflow/logs
+    ports:
+      - "${AIRFLOW_PORT}:8080"
+    entrypoint: ./scripts/airflow_webserver_entrypoint.sh
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+  # App + Airflow scheduler
+  app:
+    build:
+      target: ${ENV}  # Either dev or production
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - db  # TODO: remove later?
+      - airflow_db
+      - airflow_webserver
+    ports:
+      - "8793:8793"
+      - "8000:8000"
+      - "80:8000"
+    volumes:
+      - ./scripts:/opt/airflow/scripts
+      - ./remy_rs/dags:/opt/airflow/dags
+      - ./airflow-logs:/opt/airflow/logs
+      - ./remy_rs:/opt/airflow/remy_rs  # TODO: move to a different container?
+    env_file:
+      - .env
+      - .airflow.env
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      PYTHONPATH: /usr/local/lib/python3.6/site-packages
+    command: scheduler
+    # command: python -m uvicorn --host="0.0.0.0" remy_rs.api.api:api
+    # command: bash -c "gunicorn -b "0.0.0.0" -w 4 -k uvicorn.workers.UvicornWorker remy_rs.api.api:api"
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+  # TODO: Archival, delete if too similar to modified
+  # airflow_scheduler:
+  #   image: apache/airflow
+  #   restart: always
+  #   depends_on:
+  #     - airflow_db
+  #     - airflow_webserver
+  #   env_file:
+  #     - .airflow_env
+  #   ports:
+  #     - "8793:8793"
+  #   volumes:
+  #     - ./remy_rs/dags:/opt/airflow/dags
+  #     - ./airflow-logs:/opt/airflow/logs
+  #     - ./remy_rs:/app/remy_rs  # TODO: move to a different container?
+  #   command: scheduler
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+  #     interval: 30s
+  #     timeout: 30s
+  #     retries: 3
