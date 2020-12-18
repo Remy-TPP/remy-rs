@@ -18,17 +18,14 @@ RUN apt-get update -qy && \
 
 # USER airflow
 # RUN whoami && groups
-COPY build/requirements.txt Pipfile Pipfile.lock ./
+# COPY build/requirements.txt Pipfile Pipfile.lock ./
+COPY requirements.txt Pipfile Pipfile.lock ./
 RUN pip --version && \
     python --version && \
     pip install numpy && \
-    pip install -r requirements.txt && \
-    pip install pipenv
+    pip install -r requirements.txt
 
 USER airflow
-
-RUN pipenv --python 3.6 && \
-    pipenv install
 
 
 FROM dev AS production
@@ -40,3 +37,6 @@ COPY ./setup.py /opt/airflow/
 USER 0
 RUN python3 setup.py -q install
 USER airflow
+
+# ARG DATABASE_URL
+# ENV AIRFLOW__CORE__SQL_ALCHEMY_CONN=${DATABASE_URL}
