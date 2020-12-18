@@ -59,17 +59,30 @@ class RemyPredictor:
 
     def __init__(self):
         self.reload()
-        print('Predictor ready!')
+        if self.model:
+            print('Predictor ready!')
 
     # TODO: how to detect changes in model file and reload? or should Airflow tell me?
     def reload(self):
-        self.model = load_model()
-        print('Model reloaded')
+        try:
+            self.model = load_model()
+            print('Model reloaded')
+        except FileNotFoundError:
+            print('Model file not found, you should train more')
+            self.model = None
+
+    def verify_model(self):
+        if not self.model:
+            self.reload()
+            raise FileNotFoundError
+
 
     def predict_rating(self, **kwargs) -> float:
+        self.verify_model()
         return predict(model=self.model, **kwargs)
 
     def top_n(self, **kwargs) -> List[Tuple[int, float]]:
+        self.verify_model()
         return top_n(model=self.model, **kwargs)
 
 
