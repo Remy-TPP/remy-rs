@@ -24,4 +24,5 @@ run:
   web: bash -c "gunicorn -b "0.0.0.0" -w 4 -k uvicorn.workers.UvicornWorker remy_rs.api.api:api"
   worker:
     image: web
-    command: scheduler
+    command:
+      - scheduler
