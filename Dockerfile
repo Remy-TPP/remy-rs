@@ -39,5 +39,9 @@ USER 0
 RUN python3 setup.py -q install
 USER airflow
 
+COPY --chown=airflow:root scripts/airflow_docker_entrypoint.sh /entrypoint
+RUN chmod a+x /entrypoint
+ENTRYPOINT ["/usr/bin/dumb-init", "--", "/entrypoint"]
+
 # ARG DATABASE_URL
 # ENV AIRFLOW__CORE__SQL_ALCHEMY_CONN=${DATABASE_URL}
