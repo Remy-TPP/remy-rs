@@ -2,8 +2,8 @@ setup:
   addons:
     - plan: heroku-postgresql
       as: DATABASE
-    - plan: heroku-postgresql
-      as: AIRFLOW_DATABASE
+    # - plan: heroku-postgresql
+    #   as: AIRFLOW_DATABASE
 
 build:
   docker:
@@ -21,8 +21,9 @@ build:
 
 run:
   # web: python -m uvicorn --host="0.0.0.0" remy_rs.api.api:api
-  web: bash -c "gunicorn -b "0.0.0.0" -w 4 -k uvicorn.workers.UvicornWorker remy_rs.api.api:api"
-  worker:
-    image: web
-    command:
-      - scheduler
+  # web: bash -c "gunicorn -b "0.0.0.0" -w 4 -k uvicorn.workers.UvicornWorker remy_rs.api.api:api"
+  web: bash ./scripts/appserver_entrypoint.sh
+  # worker:
+  #   image: web
+  #   command:
+  #     - scheduler

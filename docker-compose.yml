@@ -67,9 +67,10 @@ services:
       DB_HOST: db
       DB_PORT: 5432
       PYTHONPATH: /usr/local/lib/python3.6/site-packages
-    command: scheduler
+    # command: scheduler
     # command: python -m uvicorn --host="0.0.0.0" remy_rs.api.api:api
     # command: bash -c "gunicorn -b "0.0.0.0" -w 4 -k uvicorn.workers.UvicornWorker remy_rs.api.api:api"
+    command: bash ./scripts/appserver_entrypoint.sh
     healthcheck:
       test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
       interval: 30s

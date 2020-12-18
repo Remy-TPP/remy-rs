@@ -23,6 +23,7 @@ fastparquet = "*"
 fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 gunicorn = "*"
+dj-database-url = "*"
 
 [requires]
 python_version = "3.7"

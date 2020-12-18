@@ -8,6 +8,7 @@ class Interaction(models.Model):
     # recipe = models.ForeignKey('Recipe', on_delete=models.CASCADE)
     rid = models.IntegerField()
     rating = models.FloatField()
+    # TODO: change to DECIMAL
     # TODO: validator for rating in range [0; 5]
 
     class Meta:

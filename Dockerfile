@@ -32,6 +32,7 @@ FROM dev AS production
 
 COPY ./remy_rs/dags /opt/airflow/dags
 COPY ./remy_rs /opt/airflow/remy_rs
+COPY ./scripts /opt/airflow/scripts
 COPY ./setup.py /opt/airflow/
 
 USER 0

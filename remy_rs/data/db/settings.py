@@ -2,6 +2,7 @@ import os
 
 from dotenv import load_dotenv
 load_dotenv()
+import dj_database_url
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -15,7 +16,9 @@ INSTALLED_APPS = [
     'db',
 ]
 
-if DEBUG or not os.getenv('DATABASE_URL', None):
+DB_URL = os.getenv('REMY_API_DB_URL', os.getenv('DATABASE_URL'))
+if DEBUG or not DB_URL:
+    print('Using DB_* env vars')
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -27,7 +30,10 @@ if DEBUG or not os.getenv('DATABASE_URL', None):
         }
     }
 else:
-    DATABASES = {'default': os.getenv('DATABASE_URL')}
+    print('Using REMY_API_DB_URL env var')
+    DATABASES = {
+        'default': dj_database_url.parse(os.getenv('REMY_API_DB_URL', os.getenv('DATABASE_URL')))
+    }
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'

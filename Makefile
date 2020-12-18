@@ -24,6 +24,9 @@ endif
 
 .PHONY: build
 
+reqs:
+	pipenv lock -r > ./requirements.txt
+
 ## Build app container
 build:
 	mkdir -p build/
