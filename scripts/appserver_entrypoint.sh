@@ -9,7 +9,10 @@ echo STARTING
 AIRFLOW__CORE__SQL_ALCHEMY_CONN=${DATABASE_URL}
 echo "AIRFLOW__CORE__SQL_ALCHEMY_CONN: ${AIRFLOW__CORE__SQL_ALCHEMY_CONN}"
 
-/home/airflow/.local/bin/airflow scheduler &
+# /home/airflow/.local/bin/airflow scheduler &
+# TODO: next thing to try is copying the entrypoint
+# from the airflow docker repository
+# https://github.com/apache/airflow/blob/master/scripts/in_container/prod/entrypoint_prod.sh
 
 
 # Remy API's db is expected as REMY_API_DB_URL
