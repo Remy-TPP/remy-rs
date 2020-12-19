@@ -28,8 +28,7 @@ run:
       - /entrypoint scheduler
 
   airflow_webserver:
-    # image: airflow_webserver
-    image: apache/airflow
+    image: web
     command:
       - /entrypoint webserver
       # no upgradedb, but whatever
