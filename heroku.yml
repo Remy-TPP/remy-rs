@@ -27,8 +27,8 @@ run:
     command:
       - /entrypoint scheduler
 
-  airflow_webserver:
-    image: web
-    command:
-      - /entrypoint webserver
-      # no upgradedb, but whatever
+  # airflow_webserver:
+  #   image: web
+  #   command:
+  #     - /entrypoint webserver
+  #     # no upgradedb, but whatever

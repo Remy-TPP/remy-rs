@@ -6,18 +6,17 @@ echo "PWD: $PWD"
 # This is the db for Airflow
 AIRFLOW__CORE__SQL_ALCHEMY_CONN=${DATABASE_URL}
 echo "AIRFLOW__CORE__SQL_ALCHEMY_CONN: ${AIRFLOW__CORE__SQL_ALCHEMY_CONN}"
+export PYTHONPATH=/usr/local/lib/python3.6/site-packages:/home/airflow/.local/lib/python3.6/site-packages
+echo "PYTHONPATH: ${PYTHONPATH:=not set}"
 
-# /home/airflow/.local/bin/airflow scheduler &
-# TODO: next thing to try is copying the entrypoint
-# from the airflow docker repository
-# https://github.com/apache/airflow/blob/master/scripts/in_container/prod/entrypoint_prod.sh
+/home/airflow/.local/bin/airflow upgradedb
+
+echo "Starting airflow webserver"
+/home/airflow/.local/bin/airflow webserver &
 
 
 # Remy API's db is expected as REMY_API_DB_URL
 echo "REMY_API_DB_URL: ${REMY_API_DB_URL:=not set}"
-export PYTHONPATH=/usr/local/lib/python3.6/site-packages:/home/airflow/.local/lib/python3.6/site-packages
-echo "PYTHONPATH: ${PYTHONPATH:=not set}"
-
 echo "STARTING..."
 
 if [[ ${ENV:=dev} == 'production' ]]; then
