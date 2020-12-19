@@ -41,7 +41,10 @@ USER airflow
 
 COPY --chown=airflow:root scripts/airflow_docker_entrypoint.sh /entrypoint
 RUN chmod a+x /entrypoint
-ENTRYPOINT ["/usr/bin/dumb-init", "--", "/entrypoint"]
+# ENTRYPOINT ["/usr/bin/dumb-init", "--", "/entrypoint"]
+# RUN ["/usr/bin/dumb-init", "--", "/entrypoint"]
+ENTRYPOINT ["/usr/bin/dumb-init", "--", "/entrypoint", "bash", "./scripts/appserver_entrypoint.sh"]
+
 
 # ARG DATABASE_URL
 # ENV AIRFLOW__CORE__SQL_ALCHEMY_CONN=${DATABASE_URL}

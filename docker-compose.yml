@@ -70,7 +70,10 @@ services:
     # command: scheduler
     # command: python -m uvicorn --host="0.0.0.0" remy_rs.api.api:api
     # command: bash -c "gunicorn -b "0.0.0.0" -w 4 -k uvicorn.workers.UvicornWorker remy_rs.api.api:api"
-    command: bash ./scripts/appserver_entrypoint.sh
+
+    # command: bash ./scripts/appserver_entrypoint.sh
+    # command: /entrypoint bash ./scripts/appserver_entrypoint.sh
+    # command: /bin/echo stuff
     healthcheck:
       test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
       interval: 30s
