@@ -20,15 +20,15 @@ build:
 #     - airflow upgradedb
 
 run:
-  # web: python -m uvicorn --host="0.0.0.0" remy_rs.api.api:api
-  # web: bash -c 'gunicorn -b "0.0.0.0" -w 4 -k uvicorn.workers.UvicornWorker remy_rs.api.api:api'
-  # web: /entrypoint python -m uvicorn --host="0.0.0.0" remy_rs.api.api:api
-  # web: bash ./scripts/appserver_entrypoint.sh
-  # web: /entrypoint bash -c 'gunicorn -b "0.0.0.0" -w 4 -k uvicorn.workers.UvicornWorker remy_rs.api.api:api'
-  # web: /usr/bin/dumb-init -- /entrypoint bash ./scripts/appserver_entrypoint.sh
   web: /entrypoint bash ./scripts/appserver_entrypoint.sh
-  # web will run entrypoint? supposedlyor i can use one of the previous lines which seemed to work
+
   worker:
     image: web
     command:
       - /entrypoint scheduler
+
+  airflow_webserver:
+    image: airflow_webserver
+    command:
+      # no upgradedb, but whatever
+      - /entrypoint webserver
