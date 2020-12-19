@@ -43,7 +43,9 @@ COPY --chown=airflow:root scripts/airflow_docker_entrypoint.sh /entrypoint
 RUN chmod a+x /entrypoint
 # ENTRYPOINT ["/usr/bin/dumb-init", "--", "/entrypoint"]
 # RUN ["/usr/bin/dumb-init", "--", "/entrypoint"]
-ENTRYPOINT ["/usr/bin/dumb-init", "--", "/entrypoint", "bash", "./scripts/appserver_entrypoint.sh"]
+
+# ENTRYPOINT ["/usr/bin/dumb-init", "--", "/entrypoint", "bash", "./scripts/appserver_entrypoint.sh"]
+ENTRYPOINT [ "/usr/bin/dumb-init", "--" ]
 
 
 # ARG DATABASE_URL

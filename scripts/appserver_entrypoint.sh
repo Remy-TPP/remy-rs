@@ -2,7 +2,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-echo $PWD
+echo "PWD: $PWD"
 # This is the db for Airflow
 AIRFLOW__CORE__SQL_ALCHEMY_CONN=${DATABASE_URL}
 echo "AIRFLOW__CORE__SQL_ALCHEMY_CONN: ${AIRFLOW__CORE__SQL_ALCHEMY_CONN}"
