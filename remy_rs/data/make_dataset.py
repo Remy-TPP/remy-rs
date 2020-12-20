@@ -40,7 +40,8 @@ def main():
     logger.debug(dataset[0:5])
 
     # Write to file
-    dataset.to_parquet(path=processed_data_fn, compression='uncompressed')
+    # dataset.to_parquet(path=processed_data_fn, compression='uncompressed')
+    dataset.to_parquet(path=processed_data_fn)
     logger.info(f'Wrote all interactions to {processed_data_fn}')
 
 

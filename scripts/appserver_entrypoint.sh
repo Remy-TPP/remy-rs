@@ -24,6 +24,10 @@ export API_PORT=${API_PORT:=${PORT}}
 echo "API_PORT: ${API_PORT}"
 
 
+# TODO: could also daemonize with --daemon, but should redirect stdout/stderr
+/home/airflow/.local/bin/airflow scheduler &
+
+
 # /home/airflow/.local/bin/airflow upgradedb
 
 # echo "Starting airflow webserver"
@@ -34,7 +38,7 @@ echo "API_PORT: ${API_PORT}"
 echo "Starting API"
 if [[ ${ENV:=dev} == 'production' ]]; then
   echo "Running gunicorn"
-  /home/airflow/.local/bin/gunicorn -b "0.0.0.0:${API_PORT}" -w 2 -k uvicorn.workers.UvicornWorker remy_rs.api.api:api
+  /home/airflow/.local/bin/gunicorn -b "0.0.0.0:${API_PORT}" -w 1 -k uvicorn.workers.UvicornWorker remy_rs.api.api:api
 else
   echo "Running uvicorn"
   /usr/local/bin/uvicorn --host "0.0.0.0" --port "${API_PORT}" -- remy_rs.api.api:api

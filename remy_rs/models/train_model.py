@@ -18,7 +18,8 @@ def train(dataset: surprise.dataset.Dataset) -> surprise.prediction_algorithms.A
     # TODO: this is affecting the result i think?
     surprise.model_selection.cross_validate(
         algo, dataset, cv=cv_iterator, n_jobs=-1,
-        measures=['rmse', 'mae', 'fcp'],
+        # measures=['rmse', 'mae', 'fcp'],
+        measures=['rmse', 'mae'],
         return_train_measures=True, verbose=True,
     )
 

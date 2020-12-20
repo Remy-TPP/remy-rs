@@ -38,6 +38,7 @@ def top_n(model: surprise.prediction_algorithms.AlgoBase,
     # 3. ...
     iuid = model.trainset.to_inner_uid(user_id)
     user_ratings = dict(model.trainset.ur.get(iuid, defaultdict(lambda: None)))
+    # TODO: breaks if grabs something not in the trainset
     testset = [(user_id, recipe_id, user_ratings.get(model.trainset.to_inner_iid(recipe_id), None))
                for recipe_id in model.trainset.ir.keys()]
 

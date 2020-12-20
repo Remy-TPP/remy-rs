@@ -22,10 +22,10 @@ build:
 run:
   web: /entrypoint bash ./scripts/appserver_entrypoint.sh
 
-  worker:
-    image: web
-    command:
-      - /entrypoint scheduler
+  # worker:
+  #   image: web
+  #   command:
+  #     - /entrypoint scheduler
 
   # airflow_webserver:
   #   image: web
