@@ -34,6 +34,9 @@ echo "API_PORT: ${API_PORT}"
 # # TODO: could also daemonize with -d, but should redirect stdout/stderr
 # /home/airflow/.local/bin/airflow webserver -p ${AIRFLOW_PORT} &
 
+sleep 10
+# Train
+/home/airflow/.local/bin/airflow dags trigger basic_interactions_train
 
 echo "Starting API"
 if [[ ${ENV:=dev} == 'production' ]]; then
