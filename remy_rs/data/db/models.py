@@ -13,7 +13,7 @@ class Interaction(models.Model):
 
     class Meta:
         # TODO: managed = False?
-        db_table = 'recipe_interactions'
+        db_table = 'recipes_interactions'
         unique_together = ['uid', 'rid']
 
     def __str__(self) -> str:

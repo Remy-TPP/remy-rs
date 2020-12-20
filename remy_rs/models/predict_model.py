@@ -9,6 +9,7 @@ from remy_rs.utils.constants import DEBUG, model_fn
 
 
 def load_model() -> surprise.prediction_algorithms.AlgoBase:
+    print(model_fn)
     _, model = surprise.dump.load(model_fn)
     return model
 
@@ -74,8 +75,8 @@ class RemyPredictor:
     def verify_model(self):
         if not self.model:
             self.reload()
+        if not self.model:
             raise FileNotFoundError
-
 
     def predict_rating(self, **kwargs) -> float:
         self.verify_model()
