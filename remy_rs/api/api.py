@@ -36,6 +36,7 @@ def home():
     return responses.RedirectResponse('/docs')
 
 
+# TODO: check id's are positive integers
 @api.get('/recommendations/user/{user_id}/recipe/{recipe_id}')
 def predict_a_rating(user_id: int, recipe_id: int) -> UserPrediction:
     (uid, rid, r_ui, est, _) = rs.predict_rating(user_id=user_id, recipe_id=recipe_id)
@@ -45,6 +46,8 @@ def predict_a_rating(user_id: int, recipe_id: int) -> UserPrediction:
     return UserPrediction(user_id=user_id, prediction=pred)
 
 
+# TODO: catch error in prediction ValueError: User N is not part of the trainset
+# TODO: check user_id is a positive integer
 # TODO: document falsey value (0 or None) for n give all recs for user
 @api.get('/recommendations/user/{user_id}')
 def user_top_n(user_id: int, n: int = 10) -> UserPredictions:

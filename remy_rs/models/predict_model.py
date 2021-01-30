@@ -13,7 +13,7 @@ class ModelNotTrainedError(RuntimeError):
 
 
 def load_model() -> surprise.prediction_algorithms.AlgoBase:
-    print(model_fn)
+    print('model_fn', model_fn)
     _, model = surprise.dump.load(model_fn)
     return model
 
@@ -41,19 +41,26 @@ def top_n(model: surprise.prediction_algorithms.AlgoBase,
     # 2. model.test(testset)
     # 3. ...
     iuid = model.trainset.to_inner_uid(user_id)
-    print(user_id, 'user_id')
-    print(iuid, 'iuid')
+    # print(user_id, 'user_id')
+    # print(iuid, 'iuid')
+    # print('user biases', model.bu)
+    # print('item biases', model.bi)
+    # print('model.trainset.ir', model.trainset.ir)
+    # print('model.trainset.ur', model.trainset.ur)
+    # print('default_prediction', model.default_prediction())
+
     user_ratings = dict(model.trainset.ur.get(iuid, defaultdict(lambda: None)))
-    # TODO: breaks if grabs something not in the trainset
-    testset = [(user_id, iiid, user_ratings.get(iiid, None))
+    # print('user_ratings', user_ratings)
+
+    # TODO: breaks if it grabs something not in the trainset
+    # TODO: quite inefficient to not just store list of raw ids in trained model
+    testset = [(user_id, model.trainset.to_raw_iid(iiid), user_ratings.get(iiid, None))
                for iiid in model.trainset.ir.keys()]
 
     predictions = model.test(testset)
 
-    # convert inner rid into raw rid (recipe_id) for each prediction
-    # TODO: do same thing for user?? #, uid=model.trainset.to_raw_uid(p.uid))
-    predictions = [p._replace(iid=model.trainset.to_raw_iid(p.iid))
-                   for p in predictions]
+    for prediction in predictions:
+        print('>', prediction)
 
     predictions.sort(key=lambda p: -p.est)
 
@@ -61,7 +68,6 @@ def top_n(model: surprise.prediction_algorithms.AlgoBase,
 
     if n:
         predictions = predictions[:n]
-    print(predictions)
     return predictions
 
 
@@ -118,8 +124,8 @@ def main(user_id: int, recipe_id: int) -> float:
     n = 100
     predictions = top_n(model, user_id, n=n)
     print(f'\nTOP N={n} for user {user_id}')
-    for p in predictions:
-        print(p)
+    # for p in predictions:
+    #     print(p)
 
     return prediction.est
 
