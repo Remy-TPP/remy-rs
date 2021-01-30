@@ -4,8 +4,9 @@ from typing import List, Tuple
 
 import click
 import surprise
+import numpy as np
 
-from remy_rs.utils.constants import DEBUG, model_fn
+from remy_rs.utils.constants import DEBUG, DITHERING_ENABLED, model_fn
 
 
 class ModelNotTrainedError(RuntimeError):
@@ -59,16 +60,26 @@ def top_n(model: surprise.prediction_algorithms.AlgoBase,
 
     predictions = model.test(testset)
 
+    # for prediction in predictions:
+    #     print('>', prediction)
+
+    predictions.sort(key=lambda p: -(p.r_ui if p.r_ui else p.est))
+    if DITHERING_ENABLED:
+        predictions = dither_recs(predictions)
+
     for prediction in predictions:
-        print('>', prediction)
-
-    predictions.sort(key=lambda p: -p.est)
-
-    # TODO: not actually sorted??
+        print('<', prediction)
 
     if n:
         predictions = predictions[:n]
     return predictions
+
+
+def dither_recs(recs):
+    sigma = 0.8
+    dist = np.random.default_rng().normal(0.0, sigma, len(recs))
+    new_ranks = np.array([np.log(rank + 1) for rank in range(len(recs))]) + dist
+    return [p for p, r in sorted(zip(recs, new_ranks), key=lambda t: t[1])]
 
 
 # TODO: similar_recipes con model.get_neighbors ?
@@ -122,7 +133,7 @@ def main(user_id: int, recipe_id: int) -> float:
     # Return estimation
 
     n = 100
-    predictions = top_n(model, user_id, n=n)
+    _ = top_n(model, user_id, n=n)
     print(f'\nTOP N={n} for user {user_id}')
     # for p in predictions:
     #     print(p)
