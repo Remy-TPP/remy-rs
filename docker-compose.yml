@@ -20,7 +20,7 @@ services:
       POSTGRES_PASSWORD: airflow
 
   airflow_webserver:
-    image: apache/airflow
+    image: apache/airflow:1.10.14-python3.8
     hostname: webserver
     restart: always
     depends_on:
@@ -64,26 +64,27 @@ services:
       - .env
       - .airflow.env
     environment:
+      ENV: dev
       DB_HOST: db
       DB_PORT: 5432
-      PYTHONPATH: /usr/local/lib/python3.6/site-packages
+      # PYTHONPATH: /usr/local/lib/python3.6/site-packages
+      PYTHONPATH: .
       AIRFLOW_PORT: 8080
       API_PORT: 8000
     # command: scheduler
     # command: python -m uvicorn --host="0.0.0.0" remy_rs.api.api:api
     # command: bash -c "gunicorn -b "0.0.0.0" -w 4 -k uvicorn.workers.UvicornWorker remy_rs.api.api:api"
-
     # command: bash ./scripts/appserver_entrypoint.sh
     command: /entrypoint bash ./scripts/appserver_entrypoint.sh
     healthcheck:
-      test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+      test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-scheduler.pid ]"]
       interval: 30s
       timeout: 30s
       retries: 3
 
   # TODO: Archival, delete if too similar to modified
   # airflow_scheduler:
-  #   image: apache/airflow
+  #   image: apache/airflow:1.10.14-python3.8
   #   restart: always
   #   depends_on:
   #     - airflow_db

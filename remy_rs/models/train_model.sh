@@ -3,8 +3,8 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-cd "${0%/*}"
+cd "${0%/*}/../.."
 echo "PWD: $(pwd)"
 
-echo "Running train_model.py"
-python train_model.py
+echo "Running remy_rs/models/train_model.py"
+python ./remy_rs/models/train_model.py

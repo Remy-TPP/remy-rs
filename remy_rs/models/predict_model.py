@@ -8,6 +8,10 @@ import surprise
 from remy_rs.utils.constants import DEBUG, model_fn
 
 
+class ModelNotTrainedError(RuntimeError):
+    pass
+
+
 def load_model() -> surprise.prediction_algorithms.AlgoBase:
     print(model_fn)
     _, model = surprise.dump.load(model_fn)
@@ -37,14 +41,23 @@ def top_n(model: surprise.prediction_algorithms.AlgoBase,
     # 2. model.test(testset)
     # 3. ...
     iuid = model.trainset.to_inner_uid(user_id)
+    print(user_id, 'user_id')
+    print(iuid, 'iuid')
     user_ratings = dict(model.trainset.ur.get(iuid, defaultdict(lambda: None)))
     # TODO: breaks if grabs something not in the trainset
-    testset = [(user_id, recipe_id, user_ratings.get(model.trainset.to_inner_iid(recipe_id), None))
-               for recipe_id in model.trainset.ir.keys()]
+    testset = [(user_id, iiid, user_ratings.get(iiid, None))
+               for iiid in model.trainset.ir.keys()]
 
     predictions = model.test(testset)
 
+    # convert inner rid into raw rid (recipe_id) for each prediction
+    # TODO: do same thing for user?? #, uid=model.trainset.to_raw_uid(p.uid))
+    predictions = [p._replace(iid=model.trainset.to_raw_iid(p.iid))
+                   for p in predictions]
+
     predictions.sort(key=lambda p: -p.est)
+
+    # TODO: not actually sorted??
 
     if n:
         predictions = predictions[:n]
@@ -77,7 +90,7 @@ class RemyPredictor:
         if not self.model:
             self.reload()
         if not self.model:
-            raise FileNotFoundError
+            raise ModelNotTrainedError
 
     def predict_rating(self, **kwargs) -> float:
         self.verify_model()
@@ -102,11 +115,11 @@ def main(user_id: int, recipe_id: int) -> float:
     # print(prediction)
     # Return estimation
 
-    predictions = top_n(model, user_id)
-    print(f'\nTOP N={20} for user {user_id}')
-    for p in predictions[:20]:
+    n = 100
+    predictions = top_n(model, user_id, n=n)
+    print(f'\nTOP N={n} for user {user_id}')
+    for p in predictions:
         print(p)
-    # return predictions[:20]
 
     return prediction.est
 

@@ -3,8 +3,8 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-cd "${0%/*}"
+cd "${0%/*}/../.."
 echo "PWD: $(pwd)"
 
-echo "Running make_dataset.py"
-python3 ./make_dataset.py
+echo "Running remy_rs/data/make_dataset.py"
+python3 ./remy_rs/data/make_dataset.py

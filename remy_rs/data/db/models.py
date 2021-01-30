@@ -9,7 +9,7 @@ class Interaction(models.Model):
     rid = models.IntegerField()
     rating = models.FloatField()
     # TODO: change to DECIMAL
-    # TODO: validator for rating in range [0; 5]
+    # TODO: validator for rating in range [0 or 1; 10]
 
     class Meta:
         # TODO: managed = False?

@@ -17,7 +17,7 @@ INSTALLED_APPS = [
 ]
 
 DB_URL = os.getenv('REMY_API_DB_URL', os.getenv('DATABASE_URL'))
-if DEBUG or not DB_URL:
+if not DB_URL:
     print('Using DB_* env vars')
     DATABASES = {
         'default': {
@@ -32,7 +32,7 @@ if DEBUG or not DB_URL:
 else:
     print('Using REMY_API_DB_URL env var')
     DATABASES = {
-        'default': dj_database_url.parse(os.getenv('REMY_API_DB_URL', os.getenv('DATABASE_URL')))
+        'default': dj_database_url.parse(DB_URL)
     }
 
 # Internationalization
