@@ -23,8 +23,12 @@ def predict(model: surprise.prediction_algorithms.AlgoBase,
             user_id: int,
             recipe_id: int,
             ) -> surprise.prediction_algorithms.predictions.Prediction:
-    iuid, irid = model.trainset.to_inner_uid(user_id), model.trainset.to_inner_iid(recipe_id)
-    r_ui = dict(model.trainset.ur.get(iuid, [])).get(irid, None)
+    try:
+        iuid, irid = model.trainset.to_inner_uid(user_id), model.trainset.to_inner_iid(recipe_id)
+        r_ui = dict(model.trainset.ur.get(iuid, [])).get(irid, None)
+    except ValueError:
+        # unknown user or recipe
+        r_ui = None
     return model.predict(uid=user_id, iid=recipe_id, r_ui=r_ui, verbose=DEBUG)
 
 
@@ -41,7 +45,11 @@ def top_n(model: surprise.prediction_algorithms.AlgoBase,
     # 1. Buildear testset con lista de user_id,[cada recipe_id]
     # 2. model.test(testset)
     # 3. ...
-    iuid = model.trainset.to_inner_uid(user_id)
+    try:
+        iuid = model.trainset.to_inner_uid(user_id)
+    except ValueError:
+        # unknown user
+        iuid = -1
     # print(user_id, 'user_id')
     # print(iuid, 'iuid')
     # print('user biases', model.bu)
