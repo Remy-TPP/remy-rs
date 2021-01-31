@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import FastAPI, responses
+from fastapi import FastAPI, responses, Query
 from pydantic import BaseModel
 
 from remy_rs.models.predict_model import RemyPredictor
@@ -23,6 +23,16 @@ class UserPrediction(BaseModel):
 
 class UserPredictions(BaseModel):
     user_id: int
+    size: int
+    predictions: List[RecipePrediction]
+
+
+class UserList(BaseModel):
+    user_ids: List[int]
+
+
+class GroupPredictions(BaseModel):
+    user_ids: List[int]
     size: int
     predictions: List[RecipePrediction]
 
@@ -56,3 +66,12 @@ def user_top_n(user_id: int, n: int = 10) -> UserPredictions:
     predictions = [RecipePrediction(recipe_id=rid, rating=roundRating(r_ui if r_ui else est), real=bool(r_ui))
                    for (uid, rid, r_ui, est, _) in predictions]
     return UserPredictions(user_id=user_id, size=len(predictions), predictions=predictions)
+
+
+# example: /recommendations/group/?n=10&user_id=2&user_id=4&user_id=6
+@api.get('/recommendations/group/')
+def group_top_n(n: int = 10, user_id: List[int] = Query(None)) -> GroupPredictions:
+    group_predictions = rs.group_top_n(user_ids=user_id, n=n)
+    group_predictions = [RecipePrediction(recipe_id=rid, rating=roundRating(est), real=False)
+                         for (rid, est) in group_predictions]
+    return GroupPredictions(user_ids=user_id, size=len(group_predictions), predictions=group_predictions)
