@@ -44,7 +44,6 @@ def save_model(model: surprise.prediction_algorithms.AlgoBase):
 def main():
     # TODO: time each step and log it (or just depend on logging timestamps)
     # (or is there a logging utility which times steps automatically?)
-    # data = do_etl()
     df = get_df_from_parquet()
     print('data loaded')
 

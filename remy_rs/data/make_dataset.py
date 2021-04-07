@@ -1,19 +1,25 @@
 #!/usr/bin/env python3
-import logging
+import os
+os.environ.setdefault('DB_APP_NAME', 'db')
+import logging  # noqa: E402
 
-from dotenv import find_dotenv, load_dotenv
-import pandas as pd
-import click
+from dotenv import find_dotenv, load_dotenv  # noqa: E402
+import pandas as pd  # noqa: E402
+import click  # noqa: E402
 
-from remy_rs.utils.constants import processed_data_fn
-from db.models import Interaction
+from remy_rs.utils.constants import processed_data_fn  # noqa: E402
+from db.models import Interaction  # noqa: E402
+
+
+DEBUG = os.getenv('DEBUG', os.getenv('ENV', 'production') != 'production')
 
 
 def do_etl() -> pd.DataFrame:
     """Get all user-recipe ratings and store in pandas DataFrame."""
     interaction_field_names = ('uid', 'rid', 'rating')
+    user_ratings = Interaction.objects.filter(rating__isnull=False)
     df = pd.DataFrame.from_records(
-        Interaction.objects.all().values(*interaction_field_names)
+        user_ratings.all().values(*interaction_field_names)
     )
     return df
 
@@ -26,9 +32,11 @@ def main():
     logger = logging.getLogger(__name__)
     logger.info('making final data set from raw data')
 
+    user_ratings = Interaction.objects.filter(rating__isnull=False)
+    logging.info(f'All interactions with rating:\n{user_ratings}')
     interactions_count = Interaction.objects.count()
-    users_count = Interaction.objects.distinct('uid').count()
-    recipes_count = Interaction.objects.distinct('rid').count()
+    users_count = user_ratings.distinct('uid').count()
+    recipes_count = user_ratings.distinct('rid').count()
     logger.info(f'''
         Some stats:
         User with reviews: {users_count}
@@ -40,8 +48,10 @@ def main():
     logger.debug(dataset[0:5])
 
     # Write to file
-    # dataset.to_parquet(path=processed_data_fn, compression='uncompressed')
-    dataset.to_parquet(path=processed_data_fn)
+    if DEBUG:
+        dataset.to_parquet(path=processed_data_fn, compression='uncompressed')
+    else:
+        dataset.to_parquet(path=processed_data_fn)
     logger.info(f'Wrote all interactions to {processed_data_fn}')
 
 

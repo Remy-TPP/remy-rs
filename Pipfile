@@ -24,6 +24,7 @@ fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 gunicorn = "*"
 dj-database-url = "*"
+django-better-admin-arrayfield = "*"
 
 [requires]
 python_version = "3.7"
