@@ -8,6 +8,7 @@ import surprise.prediction_algorithms as surprise_algos
 import numpy as np
 
 from remy_rs.utils.constants import DEBUG, DITHERING_ENABLED, model_fn
+from remy_rs.data.db.models import Recipe
 
 
 class ModelNotTrainedError(RuntimeError):
@@ -23,11 +24,12 @@ def load_model() -> surprise_algos.AlgoBase:
     return model
 
 
-def get_iuid(model: surprise_algos.AlgoBase, user_id: int):
+def get_iuid(model: surprise_algos.AlgoBase, user_id: int) -> int:
     try:
         return model.trainset.to_inner_uid(user_id)
     except ValueError:
         # unknown user
+        # TODO: replace with UNKNOWN_USER constant
         return -1
 
 
@@ -51,14 +53,14 @@ def predict_for_user(
     iuid = get_iuid(model, user_id)
     user_ratings = dict(model.trainset.ur.get(iuid, defaultdict(lambda: None)))
 
-    testset = [(user_id, model.trainset.to_raw_iid(iiid), user_ratings.get(iiid, None))
-               for iiid in model.trainset.ir.keys()]
+    recipes_ids = {model.trainset.to_raw_iid(iiid): iiid for iiid in model.trainset.ir.keys()}
+
+    testset = [(user_id, recipe.id, user_ratings.get(recipes_ids.get(recipe.id, None), None))
+               for recipe in Recipe.objects.all()]
 
     return model.test(testset)
 
 
-# TODO
-# 5. Hacer post procesamiento en Remy API! ... o acá??
 def top_n(model: surprise_algos.AlgoBase,
           user_id: int,
           n: int = 10,

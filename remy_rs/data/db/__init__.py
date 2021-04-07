@@ -4,9 +4,9 @@ import sys
 
 import django
 
+sys.path.append('./remy_rs/data')
 sys.dont_write_bytecode = True
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'db.settings')
-# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'remy_rs.data.db.settings')
 
 django.setup()
 

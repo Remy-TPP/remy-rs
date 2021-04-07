@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 load_dotenv()
-import dj_database_url
+import dj_database_url  # noqa: E402
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -13,7 +13,9 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', os.getenv('ENV', 'production') != 'production')
 
 INSTALLED_APPS = [
-    'db',
+    # hacky but allows all this to work whether it be imported locally or from project root
+    # values it will take: 'db', 'remy_rs.data.db'
+    os.getenv('DB_APP_NAME', 'remy_rs.data.db'),
 ]
 
 DB_URL = os.getenv('REMY_API_DB_URL', os.getenv('DATABASE_URL'))
