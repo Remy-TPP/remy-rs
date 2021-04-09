@@ -2,13 +2,14 @@
 from collections import defaultdict, namedtuple
 from typing import List, Tuple
 
+import numpy as np
 import click
 import surprise
 import surprise.prediction_algorithms as surprise_algos
-import numpy as np
+from django.utils import timezone
 
-from remy_rs.utils.constants import DEBUG, DITHERING_ENABLED, model_fn
-from remy_rs.data.db.models import Recipe
+from remy_rs.utils.constants import model_fn, DEBUG, DITHERING_ENABLED, RECENCY_REGULARIZATION_ENABLED
+from remy_rs.data.db.models import Interaction, Recipe
 
 
 class ModelNotTrainedError(RuntimeError):
@@ -68,6 +69,9 @@ def top_n(model: surprise_algos.AlgoBase,
     predictions = predict_for_user(model, user_id)
 
     predictions.sort(key=lambda p: -(p.r_ui if p.r_ui else p.est))
+
+    if RECENCY_REGULARIZATION_ENABLED:
+        predictions = recency_regularization(predictions)
     if DITHERING_ENABLED:
         predictions = dither_recs(predictions)
 
@@ -106,6 +110,35 @@ def group_top_n(
     if n:
         group_predictions = group_predictions[:n]
     return group_predictions
+
+
+def recency_regularization(
+        recs: List[surprise_algos.predictions.Prediction]
+        ) -> List[surprise_algos.predictions.Prediction]:
+    b = 10
+    c = 0.25
+    N = Recipe.objects.count()
+
+    interactions = {(inter.uid, inter.rid): inter.cooked_at
+                    for inter in Interaction.objects.filter(cooked_at__len__gt=0)}
+
+    def regularized_score(k, prediction):
+        try:
+            last_cooked_at = interactions[(prediction.uid, prediction.iid)][-1]
+            t = (timezone.now() - last_cooked_at).days
+        except (IndexError, KeyError):
+            # no cooked_at for recipe, keep same value
+            return k
+
+        return N - (N - k) * np.exp(-b * np.exp(-c * t))
+
+    new_ranks = np.array([
+        regularized_score(k, prediction)
+        for k, prediction in enumerate(recs)
+    ])
+
+    # sort recommendations based on new rank, without altering score
+    return [p for p, r in sorted(zip(recs, new_ranks), key=lambda t: t[1])]
 
 
 def dither_recs(

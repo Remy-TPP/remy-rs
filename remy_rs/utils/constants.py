@@ -8,6 +8,7 @@ load_dotenv(find_dotenv())
 
 DEBUG = True
 DITHERING_ENABLED = os.getenv('DITHERING_ENABLED', 'true').lower() == 'true'
+RECENCY_REGULARIZATION_ENABLED = os.getenv('RECENCY_REGULARIZATION_ENABLED', 'true').lower() == 'true'
 
 data_root_dir = Path(os.getenv('DATA_ROOT_DIR', Path(__file__).resolve().parents[2]))
 print('data_root_dir', data_root_dir)
