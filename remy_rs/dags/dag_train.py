@@ -1,10 +1,13 @@
 """Airflow DAG to train RS model from Recipe interactions."""
+import os
 from datetime import timedelta
 import logging
 
 from airflow.operators.bash_operator import BashOperator
 from airflow import DAG
 from airflow.utils import dates
+
+SCHEDULE_INTERVAL_MINUTES = int(float(os.getenv('TRAIN_DAG_SCHEDULE_INTERVAL_MINUTES', '30')))
 
 logging.basicConfig(format="%(name)s-%(levelname)s-%(asctime)s-%(message)s", level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,7 +27,7 @@ dag = DAG(
     description=(
         "DAG to train RS model from Recipe interactions"
     ),
-    schedule_interval=timedelta(days=1),  # timedelta(minutes=5),  # TODO
+    schedule_interval=timedelta(minutes=SCHEDULE_INTERVAL_MINUTES),
     # catchup=
     default_args=DEFAULT_ARGS,
 )
