@@ -17,6 +17,7 @@ class ModelNotTrainedError(RuntimeError):
 
 
 GroupPrediction = namedtuple('GroupPrediction', ['iid', 'est'])
+UNKNOWN_USER = -1
 
 
 def load_model() -> surprise_algos.AlgoBase:
@@ -29,9 +30,7 @@ def get_iuid(model: surprise_algos.AlgoBase, user_id: int) -> int:
     try:
         return model.trainset.to_inner_uid(user_id)
     except ValueError:
-        # unknown user
-        # TODO: replace with UNKNOWN_USER constant
-        return -1
+        return UNKNOWN_USER
 
 
 def predict(model: surprise_algos.AlgoBase,
@@ -156,7 +155,6 @@ def dither_recs(
 # TODO: similar_recipes con model.get_neighbors ?
 
 
-# TODO: here and everywhere: replace all print's with logging
 class RemyPredictor:
     model: surprise_algos.AlgoBase = None
 

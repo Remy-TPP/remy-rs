@@ -45,12 +45,7 @@ with dag:
         bash_command="/opt/airflow/remy_rs/models/train_model.sh ",
     )
 
-    # save_model_op = BashOperator(
-    #     task_id="save_trained_model",
-    #     bash_command="/opt/airflow/app/data/....sh ",
-    # )
-
-    etl_op >> train_model_op  # >> save_model_op
+    etl_op >> train_model_op
 
 
-# TODO: make new DAG for testing and reporting
+# TODO: make new DAG for testing and reporting?

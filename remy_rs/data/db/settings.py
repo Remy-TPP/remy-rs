@@ -13,7 +13,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', os.getenv('ENV', 'production') != 'production')
 
 INSTALLED_APPS = [
-    # hacky but allows all this to work whether it be imported locally or from project root
+    # hacky, but allows all of this to work whether it is imported locally or from project root;
     # values it will take: 'db', 'remy_rs.data.db'
     os.getenv('DB_APP_NAME', 'remy_rs.data.db'),
 ]

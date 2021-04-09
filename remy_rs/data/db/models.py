@@ -10,7 +10,6 @@ class Interaction(models.Model):
     rating = models.DecimalField()
 
     class Meta:
-        # TODO: managed = False?
         managed = False
         db_table = 'recipes_interaction'
         unique_together = ['uid', 'rid']

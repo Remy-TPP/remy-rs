@@ -15,18 +15,16 @@ def train(dataset: surprise.dataset.Dataset) -> surprise.prediction_algorithms.A
     cv_iterator = 5
     # cv_iterator = surprise.model_selection.ShuffleSplit(n_splits=10, test_size=0.2)
 
-    # TODO: this is affecting the result i think?
     surprise.model_selection.cross_validate(
         algo, dataset, cv=cv_iterator, n_jobs=-1,
-        # measures=['rmse', 'mae', 'fcp'],
-        measures=['rmse', 'mae'],
+        measures=['rmse', 'mae'],  # 'fcp'
         return_train_measures=True, verbose=True,
     )
 
     trainset = dataset.build_full_trainset()
     testset = trainset.build_testset()
 
-    # TODO: Verificar que hace falta
+    # TODO: Verificar
     algo.fit(trainset)
 
     print('running test')
@@ -42,8 +40,6 @@ def save_model(model: surprise.prediction_algorithms.AlgoBase):
 
 
 def main():
-    # TODO: time each step and log it (or just depend on logging timestamps)
-    # (or is there a logging utility which times steps automatically?)
     df = get_df_from_parquet()
     print('data loaded')
 

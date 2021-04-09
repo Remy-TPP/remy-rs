@@ -11,7 +11,6 @@ print(os.getcwd())
 
 def main() -> None:
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'db.settings')
-    # os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'remy_rs.data.db.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
