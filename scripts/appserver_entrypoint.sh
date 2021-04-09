@@ -9,7 +9,6 @@ echo "PORT: ${PORT}"
 # This is the db for Airflow
 AIRFLOW__CORE__SQL_ALCHEMY_CONN=${AIRFLOW__CORE__SQL_ALCHEMY_CONN:=${DATABASE_URL}}
 echo "AIRFLOW__CORE__SQL_ALCHEMY_CONN: ${AIRFLOW__CORE__SQL_ALCHEMY_CONN}"
-# export PYTHONPATH=/usr/local/lib/python3.6/site-packages:/home/airflow/.local/lib/python3.6/site-packages
 echo "PYTHONPATH: ${PYTHONPATH:=not set}"
 export AIRFLOW_PORT=${AIRFLOW_PORT:=8080}
 echo "AIRFLOW_PORT: ${AIRFLOW_PORT}"
