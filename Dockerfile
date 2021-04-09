@@ -37,6 +37,8 @@ USER airflow
 COPY --chown=airflow:root scripts/airflow_docker_entrypoint.sh /entrypoint
 RUN chmod a+x /entrypoint
 
+RUN pip freeze
+
 ENTRYPOINT [ "/usr/bin/dumb-init", "--" ]
 
 
