@@ -71,8 +71,8 @@ def top_n(model: surprise_algos.AlgoBase,
     if DITHERING_ENABLED:
         predictions = dither_recs(predictions)
 
-    for prediction in predictions:
-        print('<', prediction)
+    # for prediction in predictions:
+    #     print('<', prediction)
 
     if n:
         predictions = predictions[:n]
@@ -96,6 +96,7 @@ def group_top_n(
                          for rpp in list(map(list, zip(*users_predictions)))]
 
     group_predictions.sort(key=lambda p: -p.est)
+
     if DITHERING_ENABLED:
         group_predictions = dither_recs(group_predictions)
 
@@ -114,7 +115,8 @@ def dither_recs(
     # add normally distributed "noise" to log of original rank
     dist = np.random.default_rng().normal(0.0, sigma, len(recs))
     new_ranks = np.array([np.log(rank + 1) for rank in range(len(recs))]) + dist
-    # sort recommendations with new rank, without altering score
+
+    # sort recommendations based on new rank, without altering score
     return [p for p, r in sorted(zip(recs, new_ranks), key=lambda t: t[1])]
 
 
@@ -162,24 +164,14 @@ class RemyPredictor:
 @click.argument('user_id', type=click.INT)
 @click.argument('recipe_id', type=click.INT)
 def main(user_id: int, recipe_id: int) -> float:
-    # global model
-    # model = load_model()
-    model: surprise_algos.AlgoBase = load_model()
-    print('model loaded')
+    predictor = RemyPredictor()
 
-    prediction = predict(model, user_id, recipe_id)
+    prediction = predictor.predict_rating(user_id=user_id, recipe_id=recipe_id)
     print(f'predicted value: {prediction.est}')
-    # print(prediction)
-    # Return estimation
 
     n = 100
     print(f'\n--- TOP N={n} for user {user_id} ---')
-    _ = top_n(model, user_id, n=n)
-    # for p in predictions:
-    #     print(p)
-
-    print('\n--- GROUP TOP N ---')
-    group_top_n(model, [user_id, 3, 5], n=n)
+    predictor.top_n(user_id=user_id, n=n)
 
     return prediction.est
 
