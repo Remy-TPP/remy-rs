@@ -118,12 +118,16 @@ def recency_regularization(
     c = 0.25
     N = Recipe.objects.count()
 
-    interactions = {(inter.uid, inter.rid): inter.cooked_at
-                    for inter in Interaction.objects.filter(cooked_at__len__gt=0)}
+    # Only for one user
+    cooked_at_per_recipe = {inter.rid: inter.cooked_at
+                            for inter in Interaction.objects.filter(
+                                uid=recs[0].uid,
+                                cooked_at__len__gt=0,
+                            )}
 
     def regularized_score(k, prediction):
         try:
-            last_cooked_at = interactions[(prediction.uid, prediction.iid)][-1]
+            last_cooked_at = cooked_at_per_recipe[prediction.iid][-1]
             t = (timezone.now() - last_cooked_at).days
         except (IndexError, KeyError):
             # no cooked_at for recipe, keep same value
