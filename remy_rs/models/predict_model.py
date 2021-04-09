@@ -175,8 +175,10 @@ class RemyPredictor:
             self.model = None
 
     def verify_model(self):
-        if not self.model:
-            self.reload()
+        # if not self.model:
+        #     self.reload()
+        # TODO: reloads each time, but should reload only when necessary
+        self.reload()
         if not self.model:
             raise ModelNotTrainedError
 
